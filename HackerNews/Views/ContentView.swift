@@ -14,7 +14,9 @@ struct ContentView: View {
     var body: some View {
         NavigationView {
             List(networkManager.news) { news in
-                NewsView(news: news)
+                NavigationLink(destination: DetailView(url: news.url)){
+                    NewsView(news: news)
+                }
             }
             .navigationBarTitle("Hacker News")
         }
