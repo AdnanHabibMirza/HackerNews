@@ -7,20 +7,27 @@
 
 import Foundation
 
-class NetworkManager {
+class NetworkManager: ObservableObject {
+    
+    @Published var news = [News]()
     
     func fetchNews(){
         if let url = URL(string: "http://hn.algolia.com/api/v1/search?tags=front_page") {
             let session = URLSession(configuration: .default)
             let task = session.dataTask(with: url) { data, response, error in
-                if error == nil {
-                    let decoder = JSONDecoder()
-                    if let safeData = data {
-                        do {
-                            let newsResponse = try decoder.decode(NewsResponse.self, from: safeData)
-                        } catch {
-                            print(error)
+                if let safeError = error {
+                    print(safeError.localizedDescription)
+                    return
+                }
+                let decoder = JSONDecoder()
+                if let safeData = data {
+                    do {
+                        let newsResponse = try decoder.decode(NewsResponse.self, from: safeData)
+                        DispatchQueue.main.async {
+                            self.news = newsResponse.hits
                         }
+                    } catch {
+                        print(error)
                     }
                 }
             }

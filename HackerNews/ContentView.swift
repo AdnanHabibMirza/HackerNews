@@ -8,36 +8,32 @@
 import SwiftUI
 
 struct ContentView: View {
+    
+    @ObservedObject var networkManager = NetworkManager()
+    
     var body: some View {
         NavigationView {
-            List(posts) { post in
-                PostView(post: post)
+            List(networkManager.news) { news in
+                NewsView(news: news)
             }
             .navigationBarTitle("Hacker News")
+        }
+        .onAppear{
+            networkManager.fetchNews()
         }
     }
 }
 
-struct PostView:View {
-    let post:Post
+struct NewsView:View {
+    let news:News
     
     var body: some View {
-        Text(post.title)
+        HStack {
+            Text(String(news.points))
+            Text(news.title)
+        }
     }
 }
-
-struct Post: Identifiable {
-    let id:String
-    let title:String
-}
-
-let posts = [
-    Post(id: "1", title: "title"),
-    Post(id: "1", title: "title"),
-    Post(id: "1", title: "title"),
-    Post(id: "1", title: "title"),
-    Post(id: "1", title: "title")
-]
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
